@@ -7,13 +7,13 @@ import settings
 
 class DatabaseConnector:
 	
-	connector = None
+	database = None
 	
 	#Will do things including connecting to the database only once, accepting and executing queries
 	
 	def __init__():
 		
 		if settings.database == 'neo4j':
-			self.connector = Neo4J() #initialize connection to Neo4J
+			self.database = Neo4J() #initialize connection to Neo4J
 			
 			
