@@ -109,8 +109,25 @@ class Neo4J:
 		geneDistanceQueries = self.generateGeneralDistanceQueries(region, matchGene)
 		return geneDistanceQueries
 	
+	#Query the database for the pLi given a gene identifier
 	def obtainPliScore(self, nearestGeneId):
 		
+		pLiQuery = 'match (gene:Gene) where ID(gene) = ' + str(nearestGeneId) + ' return gene.pLi as pLi;'
+		result = self.executeQuery(pLiQuery)
+		
+		pLi = result[0]["pLi"] #here we could in principle also immediately obtain the RVIS query
+		
+		return pLi
+	
+	#Mergign RVIS with pLi is an option
+	def obtainRvisScore(self, nearestGeneId):
+		
+		rvisQuery = 'match (gene:Gene) where ID(gene) = ' + str(nearestGeneId) + ' return gene.RVIS as RVIS;'
+		result = self.executeQuery(rvisQuery)
+		
+		RVIS = result[0]["RVIS"] #here we could in principle also immediately obtain the RVIS query
+		
+		return RVIS
 		
 	#Provide the query output from the nearest distance to enhancer or tad, and compute the actual distance regardless of annotation type. 
 	def computeGeneralDistanceToAnnotation(self, results):

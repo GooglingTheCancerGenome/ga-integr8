@@ -52,9 +52,12 @@ class Annotator:
 		print "nearest gene distance: ", nearestGeneDistance
 		
 		#Use the identifier to obtain other features (merge into one query? Does not help with easily turning off features)
-		#pLI = self.databaseConnector.database.obtainPliScore(nearestGeneId)
-		#RVIS = self.databaseConnector.database.obtainRvisScore(nearestGeneId)
+		#Merging is faster, but if we then decide to not use the pLI or RVIS, it is more difficult to turn off these queries
+		pLi = self.databaseConnector.database.obtainPliScore(nearestGeneId)
+		RVIS = self.databaseConnector.database.obtainRvisScore(nearestGeneId)
 		
+		print pLi
+		print RVIS
 		
 		
 	#Add functions for other features
