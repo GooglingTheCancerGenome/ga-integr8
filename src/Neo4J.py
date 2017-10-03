@@ -89,24 +89,50 @@ class Neo4J:
 		
 		1+1
 		
-	def computeNearestDistance():
-		1+1
+	def obtainNearestGeneIdAndDistance(self, region):
+		
+		geneDistanceQueries = self.generateGeneDistanceQueries(region)
+		#Execute the queries
+		results = dict()
+		for query in geneDistanceQueries:
+			results[query] = self.executeQuery(query)
+			
+		#Process the results and obtain the nearest TAD distance
+		nearestGeneDistance = self.computeGeneralDistanceToAnnotation(results)
+		nearestGeneId = self.getNearestGeneId(results)
+		
+		return [nearestGeneId, nearestGeneDistance]
+	
+	#Again quite duplicate, maybe fix this later
+	def generateGeneDistanceQueries(self, region):
+		matchGene = '"Gene" in labels(annotationType)' #specific part for TADs
+		geneDistanceQueries = self.generateGeneralDistanceQueries(region, matchGene)
+		return geneDistanceQueries
+	
+	def obtainPliScore(self, nearestGeneId):
+		
 		
 	#Provide the query output from the nearest distance to enhancer or tad, and compute the actual distance regardless of annotation type. 
 	def computeGeneralDistanceToAnnotation(self, results):
 		
 		queries = results.keys()
 		
-		#The way to obtain the values is a bit weird, previously using "difference" as key worked, but not anymore
-		nearestDistanceFromStart = results[queries[0]][0][0]
-		nearestDistanceFromEnd = results[queries[1]][0][0]
-		nearestDistanceFromStartToEnd = results[queries[2]][0][0]
-		nearestDistanceFromEndToStart = results[queries[3]][0][0]
+		nearestDistanceFromStart = results[queries[0]][0]["difference"]
+		nearestDistanceFromEnd = results[queries[1]][0]["difference"]
+		nearestDistanceFromStartToEnd = results[queries[2]][0]["difference"]
+		nearestDistanceFromEndToStart = results[queries[3]][0]["difference"]
 		
 		nearestDistance = min(nearestDistanceFromStart, nearestDistanceFromEnd, nearestDistanceFromStartToEnd, nearestDistanceFromEndToStart)
 		
 		return nearestDistance
-			
+	
+	def getNearestGeneId(self, results):
+		queries = results.keys()
+		
+		#The way to obtain the values is a bit weird, previously using "difference" as key worked, but not anymore
+		nearestGeneId = results[queries[0]][0]["id"]
+		
+		return nearestGeneId
 	
 	#there will be large overlap in the above queries apart from the TAD/enhancer part, keep this in a simple function that can provide these queries with a few variables that may be different. 
 	def generateGeneralDistanceQueries(self, region, matchType):
@@ -117,6 +143,7 @@ class Neo4J:
 		matchChromosome = 'region.chromosome = "' + region['chromosome'] + '"'
 		matchEnhancer = '"Enhancer" in labels(annotationType)'
 		
+		returnAnnotations = 'return difference, ID(annotationType) as id limit 1' #Also return the ID so that we can use this query for genes as well and obtain the nearest gene
 		
 		#Make this type of query if the two chromosomes are the same
 		if region['chromosome'] == region['chromosome2']:
@@ -126,8 +153,6 @@ class Neo4J:
 			
 			matchWithStartToEnd = 'with region, annotation, annotationType, abs(region.start - ' + region['end'] + ') as difference order by difference asc'
 			matchWithEndToStart = 'with region, annotation, annotationType, abs(region.end - ' + region['start'] + ') as difference order by difference asc'	
-			
-			returnAnnotations = 'return difference limit 1'
 			
 			fullQueryStart = matchRegion + ' where ' + matchChromosome + ' and ' + matchType + ' ' + matchWithStart + ' ' + returnAnnotations + ';'
 			fullQueryEnd = matchRegion + ' where ' + matchChromosome + ' and ' + matchType + ' ' + matchWithEnd + ' ' + returnAnnotations + ';'
@@ -145,8 +170,6 @@ class Neo4J:
 			
 			matchWithStartToEnd = 'with region, annotation, annotationType, abs(region.start - ' + region['end'] + ') as difference order by difference asc'
 			matchWithEndToStart = 'with region, annotation, annotationType, abs(region.end - ' + region['start'] + ') as difference order by difference asc'	
-			
-			returnAnnotations = 'return difference limit 1'
 			
 			fullQueryStart = matchRegion + ' where ' + matchChromosome + ' and ' + matchType + ' ' + matchWithStart + ' ' + returnAnnotations + ';'
 			fullQueryEnd = matchRegion + ' where ' + matchChromosome + ' and ' + matchType + ' ' + matchWithEnd + ' ' + returnAnnotations + ';'

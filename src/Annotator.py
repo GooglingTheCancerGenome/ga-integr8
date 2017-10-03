@@ -39,7 +39,21 @@ class Annotator:
 		print "Distance to nearest TAD: ", nearestTadDistance
 		print "Distance to nearest enhancer: ", nearestEnhancerDistance
 	
-	
+		#Query gene features
+		
+		#Querying for gene features is not at all efficient, it would be better to obtain all features for a gene at once, since this can be done in one query
+		
+		#For the gene features, we first need the nearest gene. It may be better to first obtain the identifier, and then with that obtain newer features.
+		#The distance queries are a bit dubious, if we get the identifier of the gene, we also get the distance to this gene.
+		#I will do this at once for now, because it saves time
+		[nearestGeneId, nearestGeneDistance] = self.databaseConnector.database.obtainNearestGeneIdAndDistance(region)
+		
+		print "nearest gene identifier: ", nearestGeneId
+		print "nearest gene distance: ", nearestGeneDistance
+		
+		#Use the identifier to obtain other features (merge into one query? Does not help with easily turning off features)
+		#pLI = self.databaseConnector.database.obtainPliScore(nearestGeneId)
+		#RVIS = self.databaseConnector.database.obtainRvisScore(nearestGeneId)
 		
 		
 		
