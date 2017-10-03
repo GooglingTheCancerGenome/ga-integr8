@@ -109,6 +109,20 @@ class Neo4J:
 		geneDistanceQueries = self.generateGeneralDistanceQueries(region, matchGene)
 		return geneDistanceQueries
 	
+
+	#Rather than having these separate queries, it could be an idea to provide a flag for which features we want to include.
+	#Then based on if/else, we determine what the query should look like.
+	def queryGeneFeatures(self):
+		
+		#generate the query
+		return 0
+		
+	def buildGeneFeaturesQuery(self):
+		
+		#based on the settings, check which components need to be in the query.
+		
+		return 0
+
 	#Query the database for the pLi given a gene identifier
 	def obtainPliScore(self, nearestGeneId):
 		

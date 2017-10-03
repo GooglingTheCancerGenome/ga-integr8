@@ -39,9 +39,15 @@ class Annotator:
 		print "Distance to nearest TAD: ", nearestTadDistance
 		print "Distance to nearest enhancer: ", nearestEnhancerDistance
 	
+		#Query for number of overlapping TADs and enhancers
+		
+		
+	
 		#Query gene features
 		
 		#Querying for gene features is not at all efficient, it would be better to obtain all features for a gene at once, since this can be done in one query
+		#I will later add something in the settings where we can enable/disable specific features, the script will read that and generate the query dynamically
+		#and determine based on that which features we wish to query on. 
 		
 		#For the gene features, we first need the nearest gene. It may be better to first obtain the identifier, and then with that obtain newer features.
 		#The distance queries are a bit dubious, if we get the identifier of the gene, we also get the distance to this gene.
