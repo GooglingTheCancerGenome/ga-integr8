@@ -84,13 +84,14 @@ def parseGeneList(geneList):
 			
 			#Add the information to the dictionaries
 			
+			#Add the regions
 			regionId = str(uuid.uuid4()) #unique IDs for nodes
 			
+			regions['regionsId:ID'].append(regionId)
+			regions['start:int'].append(start)
+			regions['end:int'].append(end)
+			regions['chromosome'].append(chromosome)
 			
-			# regions['regionId:ID'].append(regionId)
-			# regions['start:int'].append(start)
-			# regions['end:int'].append(end)
-			# regions['chromosome'].append(chromosome)
 			# 
 			# splitFileName = re.split("\.", filename)
 			# cellType = splitFileName[0]
