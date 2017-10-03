@@ -16,3 +16,16 @@ outputFiles = dict(
 	
 	
 )
+
+database = dict(
+	
+	database = 'neo4j' #type of database to use, idea is that it should be easy to switch between databases
+)
+
+neo4j = dict(
+	
+	httpPath = 'bolt://localhost:7687',
+	user = 'neo4j',
+	password = 'test'
+	
+)
