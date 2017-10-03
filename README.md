@@ -1,13 +1,13 @@
  
 **Setting up Neo4J:**
 
-1.     Download Neo4J version 3.3: *https://github.com/neo4j/neo4j/tree/3.3*
+1.     Download Neo4J version 3.3.2: *https://github.com/neo4j/neo4j/tree/3.3*
 
 2.     Follow installation instructions on GitHub page, use -DskipTests
 
-3.     Move Neo4J if desired (Script *importData.sh* accesses Neo4J from *~/neo4j-3.3*, paths can be updated in scripts accordingly)
+3.     Move Neo4J if desired (Script *importData.sh* accesses Neo4J from *~/neo4j-3.3.2*, paths can be updated in scripts accordingly)
 
-4.     Navigate to *neo4j-3.3/packaging/standalone/target/neo4j-community-3.3.0-SNAPSHOT/bin*
+4.     Navigate to *neo4j-3.3.2/packaging/standalone/target/neo4j-community-3.3.0-SNAPSHOT/bin*
 
 5.     Run *./neo4j start* to start the server
 
