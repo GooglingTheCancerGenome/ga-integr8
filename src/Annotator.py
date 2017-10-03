@@ -52,18 +52,26 @@ class Annotator:
 		#For the gene features, we first need the nearest gene. It may be better to first obtain the identifier, and then with that obtain newer features.
 		#The distance queries are a bit dubious, if we get the identifier of the gene, we also get the distance to this gene.
 		#I will do this at once for now, because it saves time
-		[nearestGeneId, nearestGeneDistance] = self.databaseConnector.database.obtainNearestGeneIdAndDistance(region)
+		# [nearestGeneId, nearestGeneDistance] = self.databaseConnector.database.obtainNearestGeneIdAndDistance(region)
+		# 
+		# print "nearest gene identifier: ", nearestGeneId
+		# print "nearest gene distance: ", nearestGeneDistance
+		# 
+		# #Use the identifier to obtain other features (merge into one query? Does not help with easily turning off features)
+		# #Merging is faster, but if we then decide to not use the pLI or RVIS, it is more difficult to turn off these queries
+		# pLi = self.databaseConnector.database.obtainPliScore(nearestGeneId)
+		# RVIS = self.databaseConnector.database.obtainRvisScore(nearestGeneId)
+		# 
+		# print pLi
+		# print RVIS
 		
-		print "nearest gene identifier: ", nearestGeneId
-		print "nearest gene distance: ", nearestGeneDistance
+		geneFeatures = self.databaseConnector.database.queryGeneFeatures(region)
 		
-		#Use the identifier to obtain other features (merge into one query? Does not help with easily turning off features)
-		#Merging is faster, but if we then decide to not use the pLI or RVIS, it is more difficult to turn off these queries
-		pLi = self.databaseConnector.database.obtainPliScore(nearestGeneId)
-		RVIS = self.databaseConnector.database.obtainRvisScore(nearestGeneId)
+		print geneFeatures
 		
-		print pLi
-		print RVIS
+		####! new setup for querying gene features
+		
+		#The gene name should be returned for sure, but if no gene features are enabled, we do not need to make any query
 		
 		
 	#Add functions for other features

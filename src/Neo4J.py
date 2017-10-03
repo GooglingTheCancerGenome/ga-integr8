@@ -50,7 +50,7 @@ class Neo4J:
 			results[query] = self.executeQuery(query)
 			
 		#Process the results and obtain the nearest TAD distance
-		nearestTadDistance = self.computeGeneralDistanceToAnnotation(results)
+		[nearestTadDistance, nearestDistanceQuery] = self.computeGeneralDistanceToAnnotation(results)
 		
 		return nearestTadDistance
 		
@@ -58,7 +58,7 @@ class Neo4J:
 	def generateTadDistanceQueries(self, region):
 		
 		matchTad = '"TAD" in labels(annotationType)' #specific part for TADs
-		tadDistanceQueries = self.generateGeneralDistanceQueries(region, matchTad)
+		tadDistanceQueries = self.generateGeneralDistanceQueries(region, matchTad, None)
 		return tadDistanceQueries
 	
 	#Still lots of overlap with the nearest TAD distance function, but ok for now
@@ -71,14 +71,14 @@ class Neo4J:
 			results[query] = self.executeQuery(query)
 			
 		#Process the results and obtain the nearest TAD distance
-		nearestEnhancerDistance = self.computeGeneralDistanceToAnnotation(results)
+		[nearestEnhancerDistance, nearestDistanceQuery] = self.computeGeneralDistanceToAnnotation(results)
 		
 		return nearestEnhancerDistance
 		
 		
 	def generateEnhancerDistanceQueries(self, region):
 		matchEnhancer = '"Enhancer" in labels(annotationType)' #specific part for TADs
-		enhancerDistanceQueries = self.generateGeneralDistanceQueries(region, matchEnhancer)
+		enhancerDistanceQueries = self.generateGeneralDistanceQueries(region, matchEnhancer, None)
 		return enhancerDistanceQueries
 		
 	def generateTadOverlapQuery():
@@ -89,39 +89,58 @@ class Neo4J:
 		
 		1+1
 		
-	def obtainNearestGeneIdAndDistance(self, region):
+	#Rather than having these separate queries, we use the settings file to determine which features we wish to include
+	#Then based on if/else, we determine what the query should look like.
+	def queryGeneFeatures(self, region):
 		
-		geneDistanceQueries = self.generateGeneDistanceQueries(region)
-		#Execute the queries
+		geneFeaturesQueries = self.generateGeneFeaturesQueries(region)
 		results = dict()
-		for query in geneDistanceQueries:
+		for query in geneFeaturesQueries:
 			results[query] = self.executeQuery(query)
 			
 		#Process the results and obtain the nearest TAD distance
-		nearestGeneDistance = self.computeGeneralDistanceToAnnotation(results)
-		nearestGeneId = self.getNearestGeneId(results)
+		[nearestGeneDistance, nearestDistanceQueryIndex] = self.computeGeneralDistanceToAnnotation(results)
 		
-		return [nearestGeneId, nearestGeneDistance]
-	
-	#Again quite duplicate, maybe fix this later
-	def generateGeneDistanceQueries(self, region):
-		matchGene = '"Gene" in labels(annotationType)' #specific part for TADs
-		geneDistanceQueries = self.generateGeneralDistanceQueries(region, matchGene)
-		return geneDistanceQueries
-	
-
-	#Rather than having these separate queries, it could be an idea to provide a flag for which features we want to include.
-	#Then based on if/else, we determine what the query should look like.
-	def queryGeneFeatures(self):
+		##### Check if the query matches, it may not be the right index
+		#Also obtain pLi and RVIS (for the gene that is the nearest, also obtain which query belongs to this)
+		nearestDistanceQuery = results.keys()[nearestDistanceQueryIndex]
 		
-		#generate the query
-		return 0
+		pLi = results[nearestDistanceQuery][0]["pLi"]
+		RVIS = results[nearestDistanceQuery][0]["RVIS"]
 		
-	def buildGeneFeaturesQuery(self):
+		print pLi
+		print RVIS
 		
-		#based on the settings, check which components need to be in the query.
+		geneFeatures = dict()
+		geneFeatures["pLi"] = pLi
+		geneFeatures["RVIS"] = RVIS
+		geneFeatures["nearestGeneDistance"] = nearestGeneDistance
 		
-		return 0
+		return geneFeatures
+		
+	def generateGeneFeaturesQueries(self, region):
+		
+		#based on the settings, check which components need to be in the query
+		#we need to query for a gene, and at the same time also request the pLi and RVIS scores
+		#This means that the match is different (match Gene instead of TAD or enhancer), and the return statement is more detailed
+		
+		returnAnnotations = 'return difference' #The downside of this approach is that we make 4 queries for obtaining the nearest gene, but for each we return the features as well, which is not necessary. Is there a better way? 
+		
+		if settings.features["pLi"] is True:
+			returnAnnotations += ', annotationType.pLi as pLi'
+		if settings.features["RVIS"] is True:
+			returnAnnotations += ', annotationType.RVIS as RVIS'
+		#The distance does not need to be added, this is returned in each query anyway
+		
+		if returnAnnotations == 'return difference':
+			returnAnnotations = None #use the default in the distance queries
+		else:
+			returnAnnotations += ' limit 1'
+		
+		matchType = matchGene = '"Gene" in labels(annotationType)' #specific part for TADs
+		geneFeaturesQueries = self.generateGeneralDistanceQueries(region, matchType, returnAnnotations)
+		
+		return geneFeaturesQueries
 
 	#Query the database for the pLi given a gene identifier
 	def obtainPliScore(self, nearestGeneId):
@@ -154,8 +173,10 @@ class Neo4J:
 		nearestDistanceFromEndToStart = results[queries[3]][0]["difference"]
 		
 		nearestDistance = min(nearestDistanceFromStart, nearestDistanceFromEnd, nearestDistanceFromStartToEnd, nearestDistanceFromEndToStart)
+		#Determine which query resulted in the nearest distance, we can use this to obtain other properties of this matched annotation
+		nearestDistanceQuery = [nearestDistanceFromStart, nearestDistanceFromEnd, nearestDistanceFromStartToEnd, nearestDistanceFromEndToStart].index(nearestDistance)
 		
-		return nearestDistance
+		return [nearestDistance, nearestDistanceQuery]
 	
 	def getNearestGeneId(self, results):
 		queries = results.keys()
@@ -166,15 +187,18 @@ class Neo4J:
 		return nearestGeneId
 	
 	#there will be large overlap in the above queries apart from the TAD/enhancer part, keep this in a simple function that can provide these queries with a few variables that may be different. 
-	def generateGeneralDistanceQueries(self, region, matchType):
+	def generateGeneralDistanceQueries(self, region, matchType, returnAnnotations):
+		
+		if returnAnnotations is None: #use the default if the return is not pre-specified
+			#returnAnnotations = 'return difference, ID(annotationType) as id limit 1' #Also return the ID so that we can use this query for genes as well and obtain the nearest gene
+			returnAnnotations = 'return difference limit 1'
 		
 		matchRegion = 'match (region:Region)-[:has]->(annotation)-[:type]->(annotationType)'
 		queries = []
 		
 		matchChromosome = 'region.chromosome = "' + region['chromosome'] + '"'
-		matchEnhancer = '"Enhancer" in labels(annotationType)'
 		
-		returnAnnotations = 'return difference, ID(annotationType) as id limit 1' #Also return the ID so that we can use this query for genes as well and obtain the nearest gene
+		
 		
 		#Make this type of query if the two chromosomes are the same
 		if region['chromosome'] == region['chromosome2']:
