@@ -22,11 +22,11 @@
 
 1.     Run *python tadEnhancerDataToCsv.py* from the *src* directory to generate csv files in *data/neo4jCsvImport*
 
-2.     Run *python geneListToCsv.py ../data/Genes/MP_Genelist_HGNC_v2.txt* from the *src* directory to generate the additional gene-related csv files in *data/neo4jCsvImport*
+2. Run *python geneListToCsv.py ../data/Genes/MP_Genelist_HGNC_v2.txt* from the *src* directory to generate the additional gene-related csv files in *data/neo4jCsvImport*
 
-2.     Run *./importData.sh* from the *src* directory (the paths may be different depending on the installation directory) to import the data into Neo4J
+3.     Run *./importData.sh* from the *src* directory (the paths may be different depending on the installation directory) to import the data into Neo4J
 
-3.     You can run this query to check if all nodes and relationships are present regarding TADs and enhancers:
+4.     You can run this query to check if all nodes and relationships are present regarding TADs and enhancers:
  
 
 *match (region:Region)-[:has]->(annotation)-[:type]->(annotationType)*
@@ -35,7 +35,7 @@
 
 This should show at least 1 TAD node, 1 enhancer node, annotation nodes and region nodes, where regions have annotations, and annotations either have the type TAD or Enhancer. Regions have a start, end and chromosome property. Annotations have a cellType property. 
 
-4. You can run this query to check if all nodes and relationships are present:
+5. You can run this query to check if all nodes and relationships are present:
  
 
 *match (region:Region)-[:has]->(annotation)-[:type]->(annotationType)-[:has]->(hpo)*
