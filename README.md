@@ -44,7 +44,7 @@ This should show at least 1 TAD node, 1 enhancer node, annotation nodes and regi
 This will return genes and associated HPO terms. There are still NA values in the gene data, because in CSV every column needs to be filled. This creates unnecessary property nodes, CSV is not the best format!
 
  
-**Querying Neo4J for features for a true positive and true negative test set (may be broken since introduction of genes):**
+**Querying Neo4J for features for a true positive and true negative test set:**
 
 1.     Run *python annotateFile.py ../data/TPTNTestSet/TP.txt ../data/TPTNTestSet/TP_annotations.txt* to annotate the true positives and write the features to TP_annotations.txt
 
@@ -54,3 +54,4 @@ This will return genes and associated HPO terms. There are still NA values in th
  
 TAD annotations - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5478386/, Table S3
 Enhancers - https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4449149/, Table S2
+Gene list - internal file
