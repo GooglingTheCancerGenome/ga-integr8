@@ -203,11 +203,11 @@ class Neo4J:
 		#Make this type of query if the two chromosomes are the same
 		if region['chromosome'] == region['chromosome2']:
 			
-			matchWithStart = 'with region, annotation, annotationType, abs(region.start - ' + region['start'] + ') as difference order by difference asc'	
-			matchWithEnd = 'with region, annotation, annotationType, abs(region.end - ' + region['end'] + ') as difference order by difference asc'
+			matchWithStart = 'with region, abs(region.start - ' + region['start'] + ') as difference order by difference asc'	
+			matchWithEnd = 'with region, abs(region.end - ' + region['end'] + ') as difference order by difference asc'
 			
-			matchWithStartToEnd = 'with region, annotation, annotationType, abs(region.start - ' + region['end'] + ') as difference order by difference asc'
-			matchWithEndToStart = 'with region, annotation, annotationType, abs(region.end - ' + region['start'] + ') as difference order by difference asc'	
+			matchWithStartToEnd = 'with region, abs(region.start - ' + region['end'] + ') as difference order by difference asc'
+			matchWithEndToStart = 'with region, abs(region.end - ' + region['start'] + ') as difference order by difference asc'	
 			
 			fullQueryStart = matchRegion + ' where ' + matchChromosome + ' and ' + matchType + ' ' + matchWithStart + ' ' + returnAnnotations + ';'
 			fullQueryEnd = matchRegion + ' where ' + matchChromosome + ' and ' + matchType + ' ' + matchWithEnd + ' ' + returnAnnotations + ';'
@@ -220,11 +220,11 @@ class Neo4J:
 			
 			matchChromosome2 = 'region.chromosome = "' + region['chromosome2'] + '"'
 			
-			matchWithStart = 'with region, annotation, annotationType, abs(region.start - ' + region['start'] + ') as difference order by difference asc'	
-			matchWithEnd = 'with region, annotation, annotationType, abs(region.end - ' + region['end'] + ') as difference order by difference asc'
+			matchWithStart = 'with region, abs(region.start - ' + region['start'] + ') as difference order by difference asc'	
+			matchWithEnd = 'with region, abs(region.end - ' + region['end'] + ') as difference order by difference asc'
 			
-			matchWithStartToEnd = 'with region, annotation, annotationType, abs(region.start - ' + region['end'] + ') as difference order by difference asc'
-			matchWithEndToStart = 'with region, annotation, annotationType, abs(region.end - ' + region['start'] + ') as difference order by difference asc'	
+			matchWithStartToEnd = 'with region, abs(region.start - ' + region['end'] + ') as difference order by difference asc'
+			matchWithEndToStart = 'with region, abs(region.end - ' + region['start'] + ') as difference order by difference asc'	
 			
 			fullQueryStart = matchRegion + ' where ' + matchChromosome + ' and ' + matchType + ' ' + matchWithStart + ' ' + returnAnnotations + ';'
 			fullQueryEnd = matchRegion + ' where ' + matchChromosome + ' and ' + matchType + ' ' + matchWithEnd + ' ' + returnAnnotations + ';'

@@ -69,7 +69,7 @@ def obtainRegionsFromInput():
 def generateQueries(regions):
 	
 	#match a region and also query the annotations that we wish to request
-	matchRegion = 'match (region:Region)-[:has]->(annotation)-[:type]->(annotationType)'
+	matchRegion = 'match (region:Region)-[:has]->(annotation)-[:type]->(annotationType) using index region:Region(chromosome)'
 	
 	queries = []
 	
@@ -85,11 +85,11 @@ def generateQueries(regions):
 		#Make this type of query if the two chromosomes are the same
 		if regions['chromosomes'][region] == regions['chromosomes2'][region]:
 			
-			matchWithStart = 'with region, annotation, annotationType, abs(region.start - ' + regions['start'][region] + ') as difference order by difference asc'	
-			matchWithEnd = 'with region, annotation, annotationType, abs(region.end - ' + regions['end'][region] + ') as difference order by difference asc'
+			matchWithStart = 'with region, abs(region.start - ' + regions['start'][region] + ') as difference order by difference asc'	
+			matchWithEnd = 'with region, abs(region.end - ' + regions['end'][region] + ') as difference order by difference asc'
 			
-			matchWithStartToEnd = 'with region, annotation, annotationType, abs(region.start - ' + regions['end'][region] + ') as difference order by difference asc'
-			matchWithEndToStart = 'with region, annotation, annotationType, abs(region.end - ' + regions['start'][region] + ') as difference order by difference asc'	
+			matchWithStartToEnd = 'with region, abs(region.start - ' + regions['end'][region] + ') as difference order by difference asc'
+			matchWithEndToStart = 'with region, abs(region.end - ' + regions['start'][region] + ') as difference order by difference asc'	
 			
 			returnAnnotations = 'return difference limit 1'
 		
@@ -109,11 +109,11 @@ def generateQueries(regions):
 			
 			matchChromosome2 = 'region.chromosome = "' + regions['chromosomes2'][region] + '"'
 			
-			matchWithStart = 'with region, annotation, annotationType, abs(region.start - ' + regions['start'][region] + ') as difference order by difference asc'	
-			matchWithEnd = 'with region, annotation, annotationType, abs(region.end - ' + regions['end'][region] + ') as difference order by difference asc'
+			matchWithStart = 'with region, abs(region.start - ' + regions['start'][region] + ') as difference order by difference asc'	
+			matchWithEnd = 'with region, abs(region.end - ' + regions['end'][region] + ') as difference order by difference asc'
 			
-			matchWithStartToEnd = 'with region, annotation, annotationType, abs(region.start - ' + regions['end'][region] + ') as difference order by difference asc'
-			matchWithEndToStart = 'with region, annotation, annotationType, abs(region.end - ' + regions['start'][region] + ') as difference order by difference asc'	
+			matchWithStartToEnd = 'with region, abs(region.start - ' + regions['end'][region] + ') as difference order by difference asc'
+			matchWithEndToStart = 'with region, abs(region.end - ' + regions['start'][region] + ') as difference order by difference asc'	
 			
 			returnAnnotations = 'return difference limit 1'
 		
@@ -149,7 +149,7 @@ def generateQueries(regions):
 			matchChromosome = 'region.chromosome = "' + regions['chromosomes'][region] + '"'
 			matchPositions = 'region.start <= ' + regions['end'][region] + ' and region.end >= ' + regions['start'][region]
 			
-			returnAnnotations = 'return region.chromosome, region.start, region.end, collect(distinct annotation.cellType), labels(annotationType) as type, count(labels(annotationType)) as count'
+			returnAnnotations = 'return region.chromosome, region.start, collect(distinct annotation.cellType), labels(annotationType) as type'
 			
 			fullQuery = matchRegion + ' where ' + matchChromosome + ' and ' + matchPositions + ' ' + returnAnnotations + ';'
 		else: #Query for translocations
@@ -159,7 +159,7 @@ def generateQueries(regions):
 			matchChromosome2 = 'region.chromosome = "' + regions['chromosomes2'][region] + '"'
 			matchChromosome2Positions = 'region.start <= ' + regions['end'][region] + ' and region.end >= ' + regions['end'][region]
 			
-			returnAnnotations = 'return region.chromosome, region.start, region.end, collect(distinct annotation.cellType), labels(annotationType) as type, count(labels(annotationType)) as count'
+			returnAnnotations = 'return region.chromosome, region.start, collect(distinct annotation.cellType), labels(annotationType) as type'
 			
 			fullQuery = matchRegion + ' where ' + matchChromosome1 + ' and ' + matchChromosome1Positions + ' or ' + matchChromosome2 + ' and ' + matchChromosome2Positions + ' ' + returnAnnotations + ';'
 		
