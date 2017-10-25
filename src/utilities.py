@@ -15,3 +15,8 @@ def writeToCsv(file, information, append):
 		with open(file, "a") as outfile: #here we use append for when we are adding the enhancer information. 
 			writer = csv.writer(outfile)
 			writer.writerows(zip(*information.values()))
+			
+			
+
+			
+			

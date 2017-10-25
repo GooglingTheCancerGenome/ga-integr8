@@ -19,7 +19,7 @@ outputFiles = dict(
 
 database = dict(
 	
-	database = 'neo4j' #type of database to use, idea is that it should be easy to switch between databases
+	database = 'flatFile' #type of database to use, idea is that it should be easy to switch between databases
 )
 
 #Connection information for Neo4J
@@ -41,4 +41,17 @@ features = dict(
 	pLi = True,
 	RVIS = True,
 	nearestGeneDistance = True
+)
+
+
+#Locations of the input files
+inputFiles = dict(
+	geneList = '../data/Genes/MP_Genelist_HGNC_v2.txt',
+	tads = '../data/tads/tads.csv'
+	
+	
+)
+
+parameters = dict(
+	geneDistance = 200000 #we look at genes within 2Mb of the SV
 )

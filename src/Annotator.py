@@ -2,7 +2,9 @@
 #The final result will be the full annotation (TAD distance, enhancer overlap, gene distance, etc)
 
 from databaseConnector import DatabaseConnector
+from utilities import writeToCsv
 
+import time
 
 class Annotator:
 	
@@ -25,19 +27,31 @@ class Annotator:
 	def obtainDatabaseConnection(self):
 		self.databaseConnector = DatabaseConnector() #this will automatically provide the right database connection for us depending on the settings
 	
-	#A region is provided (maybe later this can be multiple regions), and the function goes through all the queries that we wish to make
-	#Then, the queries are executed and all information is gathered and reported back. 
-	def annotate(self, region): 
+	#I have changed the setup a little bit, now we should be able to provide multiple SVs at once (or simply call these regions to be uniform)
+	#The features are dynamically obtained depending on which have been enabled in the settings. 
+	def annotate(self, regions):
+		
+		startTime = time.time()
 		#1. Query for individual features
 		
+		nearestGeneFeatures = self.databaseConnector.database.computeNearestGeneFeatures(regions)
+		tadFeatures = self.databaseConnector.database.computeTADFeatures(regions)
+		# 
+		# #2. Collect features and write these to an output annotation file
+		allAnnotations = dict(nearestGeneFeatures.items() + tadFeatures.items())
+		self.writeAnnotationsToFile(regions, allAnnotations)
+		# 
+		# 
+		endTime = time.time()
+		print "finished annotating ", len(regions), " in ", endTime - startTime, " seconds"
 		#We could put this in separate functions as well if we need to process the regions input, but for now, it is not necessary so we can directly ask the Neo4J class. 
 		
 		#Ask the Neo4J class to format the right query for us and to execute it
-		nearestTadDistance = self.databaseConnector.database.computeNearestTadDistance(region)
-		nearestEnhancerDistance = self.databaseConnector.database.computeNearestEnhancerDistance(region)
-		
-		print "Distance to nearest TAD: ", nearestTadDistance
-		print "Distance to nearest enhancer: ", nearestEnhancerDistance
+		# nearestTadDistance = self.databaseConnector.database.computeNearestTadDistance(region)
+		# nearestEnhancerDistance = self.databaseConnector.database.computeNearestEnhancerDistance(region)
+		# 
+		# print "Distance to nearest TAD: ", nearestTadDistance
+		# print "Distance to nearest enhancer: ", nearestEnhancerDistance
 	
 		#Query for number of overlapping TADs and enhancers
 		
@@ -65,13 +79,28 @@ class Annotator:
 		# print pLi
 		# print RVIS
 		
-		geneFeatures = self.databaseConnector.database.queryGeneFeatures(region)
-		
-		print geneFeatures
 		
 		####! new setup for querying gene features
 		
 		#The gene name should be returned for sure, but if no gene features are enabled, we do not need to make any query
 		
+	#Write the annotations to a file, such that each SV still has a chromosome, start, end, and behind that columns with the annotations that we are interested in. 
+	def writeAnnotationsToFile(self, regions, annotations):
+
+		regionsDict = dict()
+		regionsDict['chr1'] = regions[:,0]
+		regionsDict['s1'] = regions[:,1]
+		regionsDict['e1'] = regions[:,2]
+		regionsDict['chr2'] = regions[:,3]
+		regionsDict['s2'] = regions[:,4]
+		regionsDict['e2'] = regions[:,5]
 		
-	#Add functions for other features
+		#merge the regions and annotations
+		annotatedRegions = dict(regionsDict.items() + annotations.items())
+
+		#write the merged dictionary to csv, the order of the annotations and regions should column-wise be the same. 
+		writeToCsv('test.csv', annotatedRegions, False)	
+		
+		
+		1+1
+		

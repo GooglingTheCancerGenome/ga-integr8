@@ -193,7 +193,7 @@ class Neo4J:
 			#returnAnnotations = 'return difference, ID(annotationType) as id limit 1' #Also return the ID so that we can use this query for genes as well and obtain the nearest gene
 			returnAnnotations = 'return difference limit 1'
 		
-		matchRegion = 'match (region:Region)-[:has]->(annotation)-[:type]->(annotationType)'
+		matchRegion = 'match (region:Region)-[:has]->(annotation)-[:type]->(annotationType) using index region:Region(chromosome)'
 		queries = []
 		
 		matchChromosome = 'region.chromosome = "' + region['chromosome'] + '"'
