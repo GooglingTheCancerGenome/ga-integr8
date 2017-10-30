@@ -206,12 +206,31 @@ def annotate(regions): #for now support only one region, give it a region and th
 	#print queries
 	
 	
+	print "Results for new SV: "
+	
 	nearestEnhancerDistanceFromStart = results[queries[0]][0][0]
 	nearestEnhancerDistanceFromEnd = results[queries[1]][0][0]
 	nearestEnhancerDistanceFromStartToEnd = results[queries[2]][0][0]
 	nearestEnhancerDistanceFromEndToStart = results[queries[3]][0][0]
 	
 	nearestEnhancerDistance = min(nearestEnhancerDistanceFromStart, nearestEnhancerDistanceFromEnd, nearestEnhancerDistanceFromStartToEnd, nearestEnhancerDistanceFromEndToStart)
+	
+	#Print the queries and their results
+	print "Querying for the nearest enhancer from the start of SV to the start of the enhancer: "
+	print queries[0]
+	print "Result: ", nearestEnhancerDistanceFromStart
+	
+	print "Querying for the nearest enhancer from the end of SV to the end of the enhancer: "
+	print queries[1]
+	print "Result: ", nearestEnhancerDistanceFromEnd
+	
+	print "Querying for the nearest enhancer from the start of SV to the end of the enhancer: "
+	print queries[2]
+	print "Result: ", nearestEnhancerDistanceFromStartToEnd
+	
+	print "Querying for the nearest enhancer from the end of SV to the start of the enhancer: "
+	print queries[3]
+	print "Result: ", nearestEnhancerDistanceFromEndToStart
 	
 	print "Linear distance to nearest enhancer: ", nearestEnhancerDistance
 	
@@ -222,9 +241,25 @@ def annotate(regions): #for now support only one region, give it a region and th
 	
 	nearestTadDistance = min(nearestTadDistanceFromStart, nearestTadDistanceFromEnd, nearestTadDistanceFromStartToEnd, nearestTadDistanceFromEndToStart)
 	
+	print "Querying for the nearest TAD from the start of SV to the start of the TAD: "
+	print queries[4]
+	print "Result: ", nearestTadDistanceFromStart
+	
+	print "Querying for the nearest TAD from the end of SV to the end of the TAD: "
+	print queries[5]
+	print "Result: ", nearestTadDistanceFromEnd
+	
+	print "Querying for the nearest TAD from the start of SV to the end of the TAD: "
+	print queries[6]
+	print "Result: ", nearestTadDistanceFromStartToEnd
+	
+	print "Querying for the nearest TAD from the end of SV to the start of the TAD: "
+	print queries[7]
+	print "Result: ", nearestTadDistanceFromEndToStart
+	
 	print "Linear distance to nearest TAD: ", nearestTadDistance
 	
-	#Number of enhancers and TADs
+	#Number of enhancers and TADs, can be done in the same query and then extracting the type afterwards. 
 	query = queries[8] #simple solution for now to select the right result set
 	numberOfEnhancers = 0
 	numberOfTads = 0
@@ -234,6 +269,12 @@ def annotate(regions): #for now support only one region, give it a region and th
 			numberOfEnhancers += 1 #all regions are unique, so we can do + 1, the count now indicates the number of cell types as well
 		if re.match("TAD", str(result["type"][0])):
 			numberOfTads += 1
+			
+	print "Querying for the number of enhancers and TADs that the SV overlaps with: "
+	print queries[8]
+	
+	print "Result for enhancers: ", numberOfEnhancers
+	print "Result for TADs: ", numberOfTads
 	
 	print "Number of enhancers within region: ", numberOfEnhancers
 	print "Number of TADS within region: ", numberOfTads
