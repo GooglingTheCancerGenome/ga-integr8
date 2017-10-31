@@ -123,6 +123,7 @@ class TADFeatureHandler:
 				previousChr2 = 'chr' + str(lineList[3])
 			
 			if np.size(chr1Subset) < 1 and np.size(chr2Subset) < 1:
+				overlappingTads.append(0) #otherwise we will not have one annotation per SV
 				continue #no need to compute the distance, there are no genes on these chromosomes
 			
 			startTime = time.time()

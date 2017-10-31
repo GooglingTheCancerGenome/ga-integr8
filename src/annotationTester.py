@@ -50,7 +50,8 @@ pancancerData = np.array(pancancerData)
 chr1col = pancancerData[:,0]
 chr2col = pancancerData[:,3]
 
-sortedInd = np.lexsort((chr2col, chr1col)) #sort first by column 1, then by column 2. This works, but it is lexographical, so chromosome 11 comes before chromosome 2. This is ok for this purpose, but maybe not for others!
+sortedInd = np.lexsort((chr2col, chr1col)) #sort first by column 1, then by column 2. This works, but it is lexographical, so chromosome 11 comes before chromosome 2. For this purpose it is ok, since we only look for this
+											#chromosome in other files to subset these, so the order in which we do that does not really matter. 
 
 sortedPancancerData = pancancerData[sortedInd]
 pancancerData = sortedPancancerData

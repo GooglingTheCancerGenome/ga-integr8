@@ -3,6 +3,7 @@
 
 from databaseConnector import DatabaseConnector
 from utilities import writeToCsv
+from utilities import writeToCsvManual
 
 import time
 
@@ -33,6 +34,13 @@ class Annotator:
 		
 		startTime = time.time()
 		#1. Query for individual features
+		
+		#Query for the Hi-C features
+		
+		
+		#self.databaseConnector.database.computeHiCFeatures(regions)
+		
+		#exit() #do not bother with other features for now
 		
 		nearestGeneFeatures = self.databaseConnector.database.computeNearestGeneFeatures(regions)
 		tadFeatures = self.databaseConnector.database.computeTADFeatures(regions)
@@ -97,9 +105,13 @@ class Annotator:
 		
 		#merge the regions and annotations
 		annotatedRegions = dict(regionsDict.items() + annotations.items())
-
+		
+		#The writeToCsv does not seem to work somehow, what if we do this by hand? Can we then write to file?
+		writeToCsvManual('test.csv', annotatedRegions)
+			
+			
 		#write the merged dictionary to csv, the order of the annotations and regions should column-wise be the same. 
-		writeToCsv('test.csv', annotatedRegions, False)	
+		#writeToCsv('test.csv', annotatedRegions, False)	
 		
 		
 		1+1

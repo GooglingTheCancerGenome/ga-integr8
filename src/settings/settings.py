@@ -47,9 +47,9 @@ features = dict(
 #Locations of the input files
 inputFiles = dict(
 	geneList = '../data/Genes/MP_Genelist_HGNC_v2.txt',
-	tads = '../data/tads/tads.csv'
-	
-	
+	tads = '../data/tads/tads.csv',
+	hiCArchive = '../../../../../Downloads/GSE87112_file/all_data_contact_maps.tgz', #keep in different location for now, file is too big for github. Somehow using ~ does also not work, we need the full relative path
+	hiCFile = 'contact_maps/HiCNorm/primary_cohort/BL.nor.chr1.mat' #the first test file that we will use for Hi-C data
 )
 
 parameters = dict(
